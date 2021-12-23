@@ -81,16 +81,48 @@ app.get("/user", async (req, res) => {
     const data = await spotifyApi.getMe();
     spotifyApi.getUserPlaylists(data.display_name).then(
       function (data) {
-        console.log("Retrieved playlists", data.body);
+        res.send(data.body);
       },
       function (err) {
         console.log("Something went wrong!", err);
+        res.send(err);
       }
     );
   }
-  res.send("Bad");
-});
 
+  spotifyApi.getMyTopArtists().then(
+    function (data) {
+      let topArtists = data.body.items;
+      for (let i = 0; i < topArtists.length; i++) {
+        console.log(topArtists[i].name);
+      }
+    },
+    function (err) {
+      console.log("Something went wrong!", err);
+    }
+  );
+
+  /* Get a User’s Top Tracks*/
+  spotifyApi.getMyTopTracks().then(
+    function (data) {
+      let topTracks = data.body.items;
+      for (let i = 0; i < topTracks.length; i++) {
+        console.log(
+          "Artist: " +
+            topTracks[i].artists[0].name +
+            "\nSong: " +
+            topTracks[i].name +
+            "\nAlbum: " +
+            topTracks[i].album.name +
+            "\n"
+        );
+      }
+    },
+    function (err) {
+      console.log("Something went wrong!", err);
+    }
+  );
+});
 app.listen(3000, () => {
   console.log("App listening on port 3000!");
 });
