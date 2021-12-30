@@ -1,19 +1,15 @@
 import axios from "axios";
 import express from "express";
-import path from "path";
 import qs from "qs";
 require("dotenv").config();
 const clientId = process.env.CLIENT_ID;
-import SpotifyWebApi from "spotify-web-api-node";
+import cors from "cors";
 const clientSecret = process.env.CLIENT_SECRET;
+const clientURL = "http://localhost:3001";
 const redirectUri = "http://localhost:3000/callback";
 let token = "";
 const app = express();
-const spotifyApi = new SpotifyWebApi({
-  clientId: clientId,
-  clientSecret: clientSecret,
-  redirectUri: redirectUri,
-});
+
 const scopes = [
   // Allow all available scopes
   "playlist-modify-private",
@@ -33,10 +29,7 @@ const scopes = [
   "user-top-read",
   "user-read-recently-played",
 ];
-app.get("/", (req, res) => {
-  // Server index.html
-  res.sendFile(path.join(__dirname, "index.html"));
-});
+app.use(cors());
 
 app.get("/auth", (req, res) => {
   res.redirect(
@@ -60,69 +53,21 @@ app.get("/callback", (req, res) => {
     redirect_uri: redirectUri,
     grant_type: "authorization_code",
   });
-
-  // Post request to get access token using axios
   axios
     .post(url, data, {
       headers: headers,
     })
     .then((response) => {
       token = response.data.access_token;
-      res.redirect(`/user?token=${token}`);
+      console.log(token);
+      res.redirect("/token");
     })
     .catch((error) => {
-      console.log(error);
+      res.status(500).send(error);
     });
 });
-app.get("/user", async (req, res) => {
-  const code: any = req.query.token;
-
-  spotifyApi.setAccessToken(code);
-  if (code) {
-    const data = await spotifyApi.getMe();
-    spotifyApi.getUserPlaylists(data.display_name).then(
-      function (data) {
-        res.send(data.body);
-      },
-      function (err) {
-        console.log("Something went wrong!", err);
-        res.send(err);
-      }
-    );
-  }
-
-  spotifyApi.getMyTopArtists().then(
-    function (data) {
-      let topArtists = data.body.items;
-      for (let i = 0; i < topArtists.length; i++) {
-        console.log(topArtists[i].name);
-      }
-    },
-    function (err) {
-      console.log("Something went wrong!", err);
-    }
-  );
-
-  /* Get a User’s Top Tracks*/
-  spotifyApi.getMyTopTracks().then(
-    function (data) {
-      let topTracks = data.body.items;
-      for (let i = 0; i < topTracks.length; i++) {
-        console.log(
-          "Artist: " +
-            topTracks[i].artists[0].name +
-            "\nSong: " +
-            topTracks[i].name +
-            "\nAlbum: " +
-            topTracks[i].album.name +
-            "\n"
-        );
-      }
-    },
-    function (err) {
-      console.log("Something went wrong!", err);
-    }
-  );
+app.get("/token", (req, res) => {
+  res.redirect(`${clientURL}?token=${token}`);
 });
 app.listen(3000, () => {
   console.log("App listening on port 3000!");

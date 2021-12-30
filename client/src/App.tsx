@@ -1,26 +1,16 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import { LoggedIn } from "./LoggedIn";
 
 function App() {
-  return (
+  // get Token from url query string
+  const token = new URLSearchParams(window.location.search).get("token");
+  // if token is not present, redirect to login page
+  if (!token) {
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+      <a href="http://localhost:3000/auth">Login</a>
+    </div>;
+  }
+  return <LoggedIn />;
 }
 
 export default App;
