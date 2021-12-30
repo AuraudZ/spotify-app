@@ -2,8 +2,29 @@ import { useEffect, useState } from "react";
 
 var SpotifyWebApi = require("spotify-web-api-node");
 var spotifyApi = new SpotifyWebApi();
+interface IUser {
+  id: string;
+  display_name: string;
+  email: string;
+  country: string;
+  images: string[];
+  product: string;
+  type: string;
+  uri: string;
+}
 export const LoggedIn = () => {
-  const [data, setData] = useState();
+  const [data, setData] = useState<IUser>(() => {
+    return {
+      id: "",
+      display_name: "",
+      email: "",
+      country: "",
+      images: [],
+      product: "",
+      type: "",
+      uri: "",
+    };
+  });
 
   const token = new URLSearchParams(window.location.search).get("token");
   spotifyApi.setAccessToken(token);
@@ -23,7 +44,7 @@ export const LoggedIn = () => {
   return (
     <div className="App">
       <h1>Logged In</h1>
-      <p>You are logged in as {JSON.stringify(data)}</p>
+      <p>You are logged in as {JSON.stringify(data.display_name)}</p>
     </div>
   );
 };
