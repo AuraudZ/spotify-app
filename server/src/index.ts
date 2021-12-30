@@ -9,6 +9,11 @@ const clientSecret = process.env.CLIENT_SECRET;
 const redirectUri = "http://localhost:3000/callback";
 let token = "";
 const app = express();
+const spotifyApi = new SpotifyWebApi({
+  clientId: clientId,
+  clientSecret: clientSecret,
+  redirectUri: redirectUri,
+});
 const scopes = [
   // Allow all available scopes
   "playlist-modify-private",
@@ -71,11 +76,7 @@ app.get("/callback", (req, res) => {
 });
 app.get("/user", async (req, res) => {
   const code: any = req.query.token;
-  var spotifyApi = new SpotifyWebApi({
-    clientId: clientId,
-    clientSecret: clientSecret,
-    redirectUri: redirectUri,
-  });
+
   spotifyApi.setAccessToken(code);
   if (code) {
     const data = await spotifyApi.getMe();
