@@ -28,7 +28,6 @@ export const LoggedIn = () => {
       setPlaylists(playlists.body.items);
       console.log(playlists.body.items);
       console.log(data.body);
-
       setUser(data.body);
     }
     fetchData();
@@ -40,6 +39,10 @@ export const LoggedIn = () => {
   };
   const getUserPlaylists = async () => {
     const data = await spotifyApi.getUserPlaylists();
+    return data;
+  };
+  const getUserTopArtists = async () => {
+    const data = await spotifyApi.getMyTopArtists({ limit: 50 });
     return data;
   };
   return (

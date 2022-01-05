@@ -9,7 +9,6 @@ const clientURL = "http://localhost:3001";
 const redirectUri = "http://localhost:3000/callback";
 let token = "";
 const app = express();
-
 const scopes = [
   // Allow all available scopes
   "playlist-modify-private",
